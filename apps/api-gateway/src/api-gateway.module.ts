@@ -1,5 +1,8 @@
 import { Module } from '@nestjs/common';
-import { ApiGatewayController } from './api-gateway.controller';
+import {
+  ApiGatewayController,
+  UsersController,
+} from './api-gateway.controller';
 import { ApiGatewayService } from './api-gateway.service';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
@@ -12,7 +15,7 @@ import { JwtStrategy } from './auth/jwt.startegy';
       secret: process.env.JWT_SECRET,
     }),
   ],
-  controllers: [ApiGatewayController],
+  controllers: [ApiGatewayController, UsersController],
   providers: [ApiGatewayService, JwtStrategy],
 })
 export class ApiGatewayModule {}

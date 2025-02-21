@@ -37,6 +37,12 @@ export class UserDto {
   name?: string;
 }
 
+export class UpdateUserDto {
+  @IsString()
+  @IsOptional()
+  name?: string;
+}
+
 export interface RpcErrorDto {
   statusCode: number;
   message: string;

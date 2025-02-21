@@ -21,9 +21,9 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b, _c;
+var _a, _b, _c, _d, _e;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ApiGatewayController = void 0;
+exports.UsersController = exports.ApiGatewayController = void 0;
 const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
 const api_gateway_service_1 = __webpack_require__(/*! ./api-gateway.service */ "./apps/api-gateway/src/api-gateway.service.ts");
 const auth_guard_1 = __webpack_require__(/*! ./auth/auth.guard */ "./apps/api-gateway/src/auth/auth.guard.ts");
@@ -68,6 +68,43 @@ exports.ApiGatewayController = ApiGatewayController = __decorate([
     (0, common_1.Controller)('auth'),
     __metadata("design:paramtypes", [typeof (_a = typeof api_gateway_service_1.ApiGatewayService !== "undefined" && api_gateway_service_1.ApiGatewayService) === "function" ? _a : Object])
 ], ApiGatewayController);
+let UsersController = class UsersController {
+    constructor(apiGatewayService) {
+        this.apiGatewayService = apiGatewayService;
+    }
+    async getUser(id, authHeader) {
+        const token = authHeader?.replace('Bearer ', '');
+        return this.apiGatewayService.getUser(id, token);
+    }
+    async updateUser(id, dto, authHeader) {
+        const token = authHeader?.replace('Bearer ', '');
+        return this.apiGatewayService.updateUser(id, dto, token);
+    }
+};
+exports.UsersController = UsersController;
+__decorate([
+    (0, common_1.Get)(':id'),
+    (0, common_1.UseGuards)(auth_guard_1.JwtAuthGuard),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Headers)('authorization')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", Promise)
+], UsersController.prototype, "getUser", null);
+__decorate([
+    (0, common_1.Patch)(':id'),
+    (0, common_1.UseGuards)(auth_guard_1.JwtAuthGuard),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Body)()),
+    __param(2, (0, common_1.Headers)('authorization')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, typeof (_e = typeof shared_1.UpdateUserDto !== "undefined" && shared_1.UpdateUserDto) === "function" ? _e : Object, String]),
+    __metadata("design:returntype", Promise)
+], UsersController.prototype, "updateUser", null);
+exports.UsersController = UsersController = __decorate([
+    (0, common_1.Controller)('users'),
+    __metadata("design:paramtypes", [typeof (_d = typeof api_gateway_service_1.ApiGatewayService !== "undefined" && api_gateway_service_1.ApiGatewayService) === "function" ? _d : Object])
+], UsersController);
 
 
 /***/ }),
@@ -104,7 +141,7 @@ exports.ApiGatewayModule = ApiGatewayModule = __decorate([
                 secret: process.env.JWT_SECRET,
             }),
         ],
-        controllers: [api_gateway_controller_1.ApiGatewayController],
+        controllers: [api_gateway_controller_1.ApiGatewayController, api_gateway_controller_1.UsersController],
         providers: [api_gateway_service_1.ApiGatewayService, jwt_startegy_1.JwtStrategy],
     })
 ], ApiGatewayModule);
@@ -160,6 +197,28 @@ let ApiGatewayService = class ApiGatewayService {
         catch (error) {
             if (error.response?.statusCode === 401) {
                 throw new common_1.UnauthorizedException(error.response.message);
+            }
+            throw error;
+        }
+    }
+    async getUser(id, token) {
+        try {
+            return await (0, rxjs_1.firstValueFrom)(this.usersClient.send('users.get', { id, token }));
+        }
+        catch (error) {
+            if (error.statusCode === 401) {
+                throw new common_1.UnauthorizedException(error.message);
+            }
+            throw error;
+        }
+    }
+    async updateUser(id, dto, token) {
+        try {
+            return await (0, rxjs_1.firstValueFrom)(this.usersClient.send('users.update', { id, token, dto }));
+        }
+        catch (error) {
+            if (error.statusCode === 401) {
+                throw new common_1.UnauthorizedException(error.message);
             }
             throw error;
         }
@@ -321,7 +380,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.UserDto = exports.AuthResponseDto = exports.ValidateTokenDto = exports.LoginDto = exports.RegisterDto = void 0;
+exports.UpdateUserDto = exports.UserDto = exports.AuthResponseDto = exports.ValidateTokenDto = exports.LoginDto = exports.RegisterDto = void 0;
 const class_validator_1 = __webpack_require__(/*! class-validator */ "class-validator");
 class RegisterDto {
 }
@@ -365,6 +424,14 @@ exports.AuthResponseDto = AuthResponseDto;
 class UserDto {
 }
 exports.UserDto = UserDto;
+class UpdateUserDto {
+}
+exports.UpdateUserDto = UpdateUserDto;
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateUserDto.prototype, "name", void 0);
 
 
 /***/ }),

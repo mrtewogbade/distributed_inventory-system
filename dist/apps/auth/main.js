@@ -321,7 +321,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.UserDto = exports.AuthResponseDto = exports.ValidateTokenDto = exports.LoginDto = exports.RegisterDto = void 0;
+exports.UpdateUserDto = exports.UserDto = exports.AuthResponseDto = exports.ValidateTokenDto = exports.LoginDto = exports.RegisterDto = void 0;
 const class_validator_1 = __webpack_require__(/*! class-validator */ "class-validator");
 class RegisterDto {
 }
@@ -365,6 +365,14 @@ exports.AuthResponseDto = AuthResponseDto;
 class UserDto {
 }
 exports.UserDto = UserDto;
+class UpdateUserDto {
+}
+exports.UpdateUserDto = UpdateUserDto;
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateUserDto.prototype, "name", void 0);
 
 
 /***/ }),

@@ -4,11 +4,17 @@ import {
   Transport,
   ClientProxy,
 } from '@nestjs/microservices';
-import { RegisterDto, LoginDto, AuthResponseDto } from '@app/shared';
+import {
+  RegisterDto,
+  LoginDto,
+  AuthResponseDto,
+  UpdateUserDto,
+} from '@app/shared';
 import { firstValueFrom } from 'rxjs';
 @Injectable()
 export class ApiGatewayService {
   private authClient: ClientProxy;
+  private usersClient: ClientProxy;
 
   constructor() {
     this.authClient = ClientProxyFactory.create({
@@ -36,6 +42,32 @@ export class ApiGatewayService {
     } catch (error: any) {
       if (error.response?.statusCode === 401) {
         throw new UnauthorizedException(error.response.message);
+      }
+      throw error;
+    }
+  }
+
+  async getUser(id: string, token: string) {
+    try {
+      return await firstValueFrom(
+        this.usersClient.send('users.get', { id, token }),
+      );
+    } catch (error: any) {
+      if (error.statusCode === 401) {
+        throw new UnauthorizedException(error.message);
+      }
+      throw error;
+    }
+  }
+
+  async updateUser(id: string, dto: UpdateUserDto, token: string) {
+    try {
+      return await firstValueFrom(
+        this.usersClient.send('users.update', { id, token, dto }),
+      );
+    } catch (error: any) {
+      if (error.statusCode === 401) {
+        throw new UnauthorizedException(error.message);
       }
       throw error;
     }
