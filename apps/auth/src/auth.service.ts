@@ -56,9 +56,9 @@ export class AuthService {
         throw new UnauthorizedException('Invalid email or password');
       }
       const payload = { sub: user.id, email: user.email };
-      return {
-        accessToken: this.jwtService.sign(payload),
-      };
+      const token = this.jwtService.sign(payload);
+      console.log('Generated token:', token); // Debug log
+      return { accessToken: token };
     } catch (error) {
       if (error instanceof UnauthorizedException) {
         throw error;
@@ -70,11 +70,52 @@ export class AuthService {
     }
   }
 
+  // async login(loginDto: LoginDto): Promise<AuthResponseDto> {
+  //   try {
+  //     const user = await this.prisma.user.findUnique({
+  //       where: { email: loginDto.email },
+  //     });
+  //     if (!user) {
+  //       throw new UnauthorizedException('Invalid email or password');
+  //     }
+  //     const passwordMatch = await bcrypt.compare(
+  //       loginDto.password,
+  //       user.password,
+  //     );
+  //     if (!passwordMatch) {
+  //       throw new UnauthorizedException('Invalid email or password');
+  //     }
+  //     const payload = { sub: user.id, email: user.email };
+  //     return {
+  //       accessToken: this.jwtService.sign(payload),
+  //     };
+  //   } catch (error) {
+  //     if (error instanceof UnauthorizedException) {
+  //       throw error;
+  //     }
+  //     throw new UnauthorizedException(
+  //       'Login failed due to an unexpected error',
+  //       error.message,
+  //     );
+  //   }
+  // }
+
+  // async validateToken(validateTokenDto: ValidateTokenDto): Promise<UserDto> {
+  //   try {
+  //     const decoded = this.jwtService.verify(validateTokenDto.token);
+  //     return { id: decoded.sub, email: decoded.email };
+  //   } catch (error) {
+  //     throw new UnauthorizedException('Invalid token', error.message);
+  //   }
+  // }
+
   async validateToken(validateTokenDto: ValidateTokenDto): Promise<UserDto> {
     try {
       const decoded = this.jwtService.verify(validateTokenDto.token);
+      console.log('Token decoded successfully:', decoded);
       return { id: decoded.sub, email: decoded.email };
     } catch (error) {
+      console.error('Token verification error:', error.name, error.message);
       throw new UnauthorizedException('Invalid token', error.message);
     }
   }

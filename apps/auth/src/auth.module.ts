@@ -8,7 +8,7 @@ import { RpcExceptionFilter } from './filters/rpc-exception.filter';
 @Module({
   imports: [
     JwtModule.register({
-      secret: process.env.JWT_SECRET,
+      secret: 'my-super-secret-key',
       signOptions: { expiresIn: '1h' },
     }),
   ],

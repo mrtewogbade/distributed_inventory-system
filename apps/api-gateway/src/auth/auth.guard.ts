@@ -6,6 +6,7 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 import { ClientProxyFactory, Transport } from '@nestjs/microservices';
 import { ValidateTokenDto } from '@app/shared';
+import { firstValueFrom } from 'rxjs';
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
@@ -21,12 +22,12 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
         servers: [process.env.NATS_SERVER || 'nats://localhost:4222'],
       },
     });
-
     try {
       const validateTokenDto: ValidateTokenDto = { token };
-      const user = await authClient
-        .send('auth.validate_token', validateTokenDto)
-        .toPromise();
+      const user = await firstValueFrom(
+        // Use firstValueFrom
+        authClient.send('auth.validate_token', validateTokenDto),
+      );
       request.user = user;
       return true;
     } catch (error) {

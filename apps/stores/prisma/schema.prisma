@@ -1,0 +1,45 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL_")
+}
+
+model Store {
+  id            String       @id @default(uuid())
+  businessName  String
+  businessType  BusinessType
+  phoneNumber   String
+  businessEmail String       @unique
+  location      String
+  logoUrl       String?
+  isVerified    Boolean      @default(false)
+  createdAt     DateTime     @default(now())
+  memberships   StoreMember[]
+  roles         StoreRole[]
+}
+
+model StoreMember {
+  id      String     @id @default(uuid())
+  storeId String
+  userId  String
+  roleId  String?
+  store   Store      @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  role    StoreRole? @relation(fields: [roleId], references: [id], onDelete: SetNull)
+}
+
+model StoreRole {
+  id          String       @id @default(uuid())
+  storeId     String
+  title       String
+  permissions String[]     // Matches Permission enum values
+  store       Store        @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  members     StoreMember[]
+}
+
+enum BusinessType {
+  SERVICE_BASED
+  PRODUCT_BASED
+}

@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import {
   ApiGatewayController,
   UsersController,
+  StoresController,
 } from './api-gateway.controller';
 import { ApiGatewayService } from './api-gateway.service';
 import { JwtModule } from '@nestjs/jwt';
@@ -15,7 +16,7 @@ import { JwtStrategy } from './auth/jwt.startegy';
       secret: process.env.JWT_SECRET,
     }),
   ],
-  controllers: [ApiGatewayController, UsersController],
+  controllers: [ApiGatewayController, UsersController, StoresController],
   providers: [ApiGatewayService, JwtStrategy],
 })
 export class ApiGatewayModule {}
