@@ -18,6 +18,5 @@ model User {
   email     String   @unique
   password  String
   name      String?
-  phonenumber String?
   createdAt DateTime @default(now())
 }
